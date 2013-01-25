@@ -14,17 +14,18 @@ import reactivemongo.bson.BSONObjectID
 
 object CommitDAO {
 
- 	val collection = ReactiveMongoPlugin.collection("commits")
-	def handleLastError(lastError: LastError, success: Option[BSONObjectID], error: => String): Either[String, BSONObjectID] = {
-		if(lastError.ok) {
-		  success map(Right(_)) getOrElse Left(error + " : ObjectId is none")
-		} else Left(error)
-	}
+  val collection = ReactiveMongoPlugin.collection("commits")
 
-	def create(commit: JsValue): Future[Either[String, BSONObjectID]] = {
-		collection.insert(commit).map { lastError =>
-		  val id = (commit \ "_id" \ "$oid").asOpt[String].map(BSONObjectID(_))
-		  handleLastError(lastError, id, "An error occurred while creating a commit")
-		}
-	}
+  def handleLastError(lastError: LastError, success: Option[BSONObjectID], error: => String): Either[String, BSONObjectID] = {
+    if(lastError.ok) {
+      success map(Right(_)) getOrElse Left(error + " : ObjectId is none")
+    } else Left(error)
+  }
+
+  def create(commit: JsValue): Future[Either[String, BSONObjectID]] = {
+    collection.insert(commit).map { lastError =>
+      val id = (commit \ "_id" \ "$oid").asOpt[String].map(BSONObjectID(_))
+      handleLastError(lastError, id, "An error occurred while creating a commit")
+    }
+  }
 }

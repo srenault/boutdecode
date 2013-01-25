@@ -24,7 +24,12 @@ import actors.FeedsActor._
 object Application extends Controller {
 
   def index = Action { implicit request =>
-    Ok(views.html.index())
+    Async {
+      CommitDAO.create(Json.obj("test" -> true)).recover {
+        case e:Exception => future(Ok)
+      }
+      future(Ok(views.html.index()))
+    }
   }
 
   def createCommit = Action(parse.json) { request =>
