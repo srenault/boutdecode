@@ -24,12 +24,11 @@ import actors.FeedsActor._
 object Application extends Controller {
 
   def index = Action { implicit request =>
-    Async {
-      CommitDAO.create(Json.obj("test" -> true)).recover {
-        case e:Exception => future(Ok)
-      }
-      future(Ok(views.html.index()))
-    }
+    Ok(views.html.index())
+  }
+
+  def mobile = Action { implicit request =>
+    Ok(views.html.mobile())
   }
 
   def createCommit = Action(parse.json) { request =>
@@ -38,7 +37,10 @@ object Application extends Controller {
         Commit.json.readFromWeb andKeep Commit.json.writeObjectId
       ) map { json =>
         CommitDAO.create(json).map {
-          case Right(id) => Ok(Json.obj("id" -> id.stringify))
+          case Right(id) => {
+            FeedsActor.ref ! NewFeed(json)
+            Ok(Json.obj("id" -> id.stringify))
+          }
           case Left(error) => BadRequest
         }
       } recoverTotal {

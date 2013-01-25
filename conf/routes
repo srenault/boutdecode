@@ -5,6 +5,7 @@
 # Home page
 
 GET     /                           controllers.Application.index
+GET     /mobile                     controllers.Application.mobile
 GET     /feeds                      controllers.Application.feeds
 POST    /commit                     controllers.Application.createCommit
 
