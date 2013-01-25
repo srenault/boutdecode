@@ -20,3 +20,9 @@ $(document).ready(function() {
     });
     BoutDeCode.start('/');
 });
+
+(function() {
+    window.ansi2html = function(ansi) {
+        return ansi.replace(/\[(\d+)m/g,'<span class="color_$1">').replace(/\[m/g,"</span>")
+    }
+})()
