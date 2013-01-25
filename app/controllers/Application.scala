@@ -8,7 +8,9 @@ import akka.pattern.ask
 import reactivemongo.api._
 import play.api._
 import play.api.mvc._
+import play.api.libs.{ Comet, EventSource }
 import play.api.libs.functional.syntax._
+import play.api.libs.iteratee._
 import play.api.libs.json._
 import play.api.libs.json.Json._
 import play.api.libs.json.Reads._
@@ -45,8 +47,10 @@ object Application extends Controller {
   def feeds = Action { implicit request =>
     implicit val timeout = Timeout(10 seconds)
     Async {
-      (FeedsActor.ref ? Listen()).mapTo[JsValue].map { commit =>
-        Ok(commit)
+      (FeedsActor.ref ? Listen()).mapTo[Enumerator[JsValue]].map { commit =>
+        implicit val feed = Comet.CometMessage[JsValue](_.toString)
+        Ok.stream(commit &> EventSource())
+          .withHeaders(CONTENT_TYPE -> "text/event-stream")
       } recover {
         case e: Exception => InternalServerError(e.getMessage)
       }

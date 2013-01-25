@@ -7,24 +7,13 @@ $(document).ready(function() {
         '/' : {
             get: function() {
                 console.log('Welcome BoutDeCode !');
-                var uri = jsRoutes.controllers.Application.progress(
-                    data.username,
-                    data.fullname,
-                    data.language
-                ).absoluteURL();
-
+                var uri = jsRoutes.controllers.Application.feeds().absoluteURL();
                 var eventSource = new EventSource(uri);
                 eventSource.onmessage = function(msg) {
-                    var progress = JSON.parse(msg.data);
-                    console.log(data);
-                    if(data.classic) {
-                        CoderSide.search.progress(progress);
-                    } else {
-                        CoderSide.loading.progress(progress);
-                    }
+                    console.log(JSON.parse(msg.data));
                 };
                 eventSource.onerror = function() {
-                    console.log('Error while getting progress update');
+                    console.log('Error while getting feeds');
                 };
             }
         }
