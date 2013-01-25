@@ -16,16 +16,15 @@ $(document).ready(function() {
                     ('<div class="commit">' +
                         '<span class="author">%author%</span>' +
                         '<span class="date">%date%</span>' +
-                        '<pre>%diff%</pre>' +
-                        '<span class="hash">%hash%</span>' +
                         '<span class="message">%message%</span>' +
+                        '<pre class="diff">%diff%</pre>' +
+                        '<span class="hash">%hash%</span>' +
                      '</div>').replace('%author%', commit.author)
                               .replace('%date%', commit.date)
-                              .replace('%diff%', commit.diff)
                               .replace('%hash%', commit.hash)
-                              .replace('%message%', commit.message);
+                              .replace('%message%', commit.message)
+                              .replace('%diff%', ansi2html(commit.diff));
 
-                    console.log(commitAsHTML);
                     $('.drop-zone').html($(commitAsHTML));
                 };
                 eventSource.onerror = function() {
@@ -39,6 +38,6 @@ $(document).ready(function() {
 
 (function() {
     window.ansi2html = function(ansi) {
-        return ansi.replace(/\[(\d+)m/g,'<span class="color_$1">').replace(/\[m/g,"</span>")
+        return ansi.replace(/\[(\d+)m/g,'<span class="color_$1">').replace(/\[m/g,"</span>");
     }
 })()
