@@ -23,9 +23,10 @@ $(document).ready(function() {
                               .replace('%date%', commit.date)
                               .replace('%hash%', commit.hash)
                               .replace('%message%', commit.message)
-                              .replace('%diff%', ansi2html(commit.diff));
+                              .replace('%diff%', ansi2html(commit.diff.replace(/</g,"&lt;").replace(/>/g,"&gt;") ));
 
                     $('.drop-zone').html($(commitAsHTML));
+                    animate()
                 };
                 eventSource.onerror = function() {
                     console.log('Error while getting feeds');
@@ -41,3 +42,20 @@ $(document).ready(function() {
         return ansi.replace(/\[(\d+)m/g,'<span class="color_$1">').replace(/\[m/g,"</span>");
     }
 })()
+
+function animate() {
+    var scrollHeight=$('html,body').height() - $('html,body')[0].clientHeight;
+    var duration = (scrollHeight / 100) * 1000;
+    if (scrollHeight) {
+        $('html,body').stop().animate({
+            scrollTop: $('html,body').height()
+        }, duration, "linear", function() {
+            console.log("end");
+            $('html,body').animate({
+                scrollTop: "0px"
+            }, duration, "linear", function() {
+                animate();
+            });
+        });
+    }
+}
