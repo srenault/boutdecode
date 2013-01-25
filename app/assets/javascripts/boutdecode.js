@@ -10,7 +10,23 @@ $(document).ready(function() {
                 var uri = jsRoutes.controllers.Application.feeds().absoluteURL();
                 var eventSource = new EventSource(uri);
                 eventSource.onmessage = function(msg) {
-                    console.log(JSON.parse(msg.data));
+                    var commit = JSON.parse(msg.data);
+                    console.log(commit);
+                    var commitAsHTML =
+                    ('<div class="commit">' +
+                        '<span class="author">%author%</span>' +
+                        '<span class="date">%date%</span>' +
+                        '<pre>%diff%</pre>' +
+                        '<span class="hash">%hash%</span>' +
+                        '<span class="message">%message%</span>' +
+                     '</div>').replace('%author%', commit.author)
+                              .replace('%date%', commit.date)
+                              .replace('%diff%', commit.diff)
+                              .replace('%hash%', commit.hash)
+                              .replace('%message%', commit.message);
+
+                    console.log(commitAsHTML);
+                    $('.drop-zone').html($(commitAsHTML));
                 };
                 eventSource.onerror = function() {
                     console.log('Error while getting feeds');
