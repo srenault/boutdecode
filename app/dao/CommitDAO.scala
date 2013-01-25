@@ -7,6 +7,7 @@ import play.api.Play.current
 import play.api.libs.json._
 import play.modules.reactivemongo._
 import play.modules.reactivemongo.PlayBsonImplicits._
+import reactivemongo.bson.handlers.DefaultBSONHandlers._
 import reactivemongo.api.SortOrder.{ Ascending, Descending }
 import reactivemongo.core.commands.LastError
 import reactivemongo.bson.BSONObjectID
@@ -27,5 +28,8 @@ object CommitDAO {
       val id = (commit \ "_id" \ "$oid").asOpt[String].map(BSONObjectID(_))
       handleLastError(lastError, id, "An error occurred while creating a commit")
     }
+  }
+  def find(): Future[List[JsValue]] = {
+	collection.find[JsValue, JsValue](Json.obj()).toList
   }
 }

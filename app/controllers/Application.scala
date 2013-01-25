@@ -20,6 +20,7 @@ import dao._
 import models._
 import actors.FeedsActor
 import actors.FeedsActor._
+import models.Commit.json._
 
 object Application extends Controller {
 
@@ -28,13 +29,17 @@ object Application extends Controller {
   }
 
   def mobile = Action { implicit request =>
-    Ok(views.html.mobile())
+    Async {
+      CommitDAO.find().map { commits =>  
+        Ok(views.html.mobile(commits.map(_.as[Commit])))
+      }
+    }
   }
 
   def createCommit = Action(parse.json) { request =>
     Async {
       request.body.validate(
-        Commit.json.readFromWeb andKeep Commit.json.writeObjectId
+        Commit.json.readCommit andKeep Commit.json.writeObjectId
       ) map { json =>
         CommitDAO.create(json).map {
           case Right(id) => {

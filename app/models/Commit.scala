@@ -7,19 +7,14 @@ import play.api.libs.json.Reads._
 import play.api.libs.functional.syntax._
 
 
-case class Commit()
+case class Commit(author: String, date: String, message: String, diff: String)
 
-object Commit {
+object Commit extends Function4[String, String, String, String, Commit] {
 
   object json {
-   val readFromWeb =
-	(
-		(__ \ 'hash).read[String] and
-		(__ \ 'author).read[String] and
-		(__ \ 'date).read[String] and
-		(__ \ 'message).read[String] and
-		(__ \ 'diff).read[String]
-	) tupled
+
+
+	implicit val readCommit = Json.reads[Commit]
 
 	val writeObjectId: Reads[JsObject] = {
     	def id = BSONObjectID.generate.stringify
@@ -30,5 +25,6 @@ object Commit {
 	        )
       	) reduce
   	}
+
   }
 }

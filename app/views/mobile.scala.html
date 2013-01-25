@@ -1,5 +1,16 @@
-@()(implicit request: RequestHeader)
+@(commits: Seq[models.Commit])(implicit request: RequestHeader)
 
 @main("BoutDeCode") {
-<h1>{{ BoutDeCode }}</h1>
+ <nav>
+    <ul id="nlists">
+        <li class="head"></li>
+           
+        <li>
+        	 @commits.map { c =>
+            @c.author
+            @c.date
+        </li>
+       }
+    </ul>
+</nav>
 }
